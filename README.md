@@ -2,13 +2,7 @@
 
 ## 1.安装
 
-1. 安装**python3**
-1. 安装**pip**:
-
-    1. 下载[ez_setup.py](https://bootstrap.pypa.io/ez_setup.py)
-
-    1. 用python 运行下载的ez_setup.py即可安装pip
-
+1. 安装**python3**(勾选Add python to environment variables)
 1. 安装**requests**库: 在cmd中运行`pip install requests`
 
 ## 2.配置
@@ -22,6 +16,6 @@
 
 ## 3.运行
 
-命令行中运行: `python3 main.py`
+命令行中运行: `python main.py`
 
 ## TODO:1.扩展本地求购和新闻频道
