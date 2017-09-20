@@ -1,19 +1,20 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+"fetch data from ITS website periodically"
 
 import smtplib
 from email.mime.text import MIMEText
 import time
 import re
 import json
-import sys
 import requests
 
 int_sd_updated_time = ''
 dom_sd_updated_time = ''
 news_updated_time = ''
+config = {}
 
-def send_email(to:str, subject:str, text:str=None):
+def send_email(to: str, subject: str, text: str=None):
     _user = "375002410@qq.com"
     _pwd = "vqfsdpjaaxeobhji"
 
@@ -35,6 +36,7 @@ def send_email(to:str, subject:str, text:str=None):
 
 def int_sd_updated(s:requests.session):
     global int_sd_updated_time
+    global config
 
     data = s.get(url='http://cn.its.glo-ots.cn/ITS_MSG_Int_sd.asp')
     data.encoding = 'gbk'
@@ -44,13 +46,17 @@ def int_sd_updated(s:requests.session):
         return False
     else:
         int_sd_updated_time = latest_time
+        config["int_sd_updated_time"] = latest_time
+        with open("configure.json", "w") as f:
+            json.dump(config, f)
         return True
 
 def main():
     username = 'ftcl03'
     password = 'Stl292707'
     sleep_time = 60
-    email = ""
+    email = "375002410@qq.com"
+    global config
     global int_sd_updated_time
     global dom_sd_updated_time
     global news_updated_time
