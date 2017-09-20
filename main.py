@@ -10,28 +10,6 @@ import requests
 int_sd_updated_time = ''
 dom_sd_updated_time = ''
 news_updated_time = ''
-ad_updated_time = ''
-domestic_sales_updated_time = ''
-export_updated_time = ''
-export_sales_updated_time = ''
-exchange_rate = {"AUD":0,
-"CHF":0,
-"EUR":0,
-"HKD":0,
-"MOP":0,
-"NZD":0,
-"SEK":0,
-"THB":0,
-"CAD":0,
-"DMK":0,
-"GBP":0,
-"JPY":0,
-"NOK":0,
-"PHP":0,
-"SGD":0,
-"USD":0
-}
-
 
 def send_email(to:str, subject:str, text:str=None):
     _user = "375002410@qq.com"
