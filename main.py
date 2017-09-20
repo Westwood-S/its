@@ -5,6 +5,8 @@ import smtplib
 from email.mime.text import MIMEText
 import time
 import re
+import json
+import sys
 import requests
 
 int_sd_updated_time = ''
@@ -47,14 +49,30 @@ def int_sd_updated(s:requests.session):
 def main():
     username = 'ftcl03'
     password = 'Stl292707'
+    sleep_time = 60
+    email = ""
+    global int_sd_updated_time
+    global dom_sd_updated_time
+    global news_updated_time
+
+    with open("configure.json", "r") as f:
+        config = json.load(f)
+    username = config["username"]
+    password = config["password"]
+    sleep_time = config["time"]
+    email = config["email"]
+    int_sd_updated_time = config["int_sd_updated_time"]
+    dom_sd_updated_time = config["dom_sd_updated_time"]
+    news_updated_time = config["news_updated_time"]
+
     session = requests.session()
     payload = {'account': username, 'password': password}
     session.post(url='http://cn.its.glo-ots.cn/login.asp', data=payload)
 
     while True:
         if int_sd_updated (session):
-            send_email("375002410@qq.com", "int_sd_updated")
-        time.sleep(5)
+            send_email(email, "int_sd_updated")
+        time.sleep(sleep_time)
 
 if __name__ == '__main__':
     main()
