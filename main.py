@@ -11,7 +11,6 @@ import requests
 
 int_sd_updated_time = ''
 dom_sd_updated_time = ''
-news_updated_time = ''
 config = {}
 import_data = {}
 
@@ -79,7 +78,6 @@ def main():
     global import_data
     global int_sd_updated_time
     global dom_sd_updated_time
-    global news_updated_time
 
     with open("config.json", "r") as f:
         config = json.load(f)
@@ -91,14 +89,12 @@ def main():
     email = config["email"]
     int_sd_updated_time = import_data["int_sd_updated_time"]
     dom_sd_updated_time = import_data["dom_sd_updated_time"]
-    news_updated_time = import_data["news_updated_time"]
     print ("用户名:{}".format(username))
     print ("密码:{}".format(password))
     print ("采集周期:{}".format(sleep_time))
     print ("发送邮箱:{}".format(email))
     print ("导入海外供求更新时间:{}".format(int_sd_updated_time))
     print ("导入本地供求更新时间:{}".format(dom_sd_updated_time))
-    print ("导入新闻更新时间:{}".format(news_updated_time))
 
     session = requests.session()
     payload = {'account': username, 'password': password}
