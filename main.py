@@ -96,17 +96,22 @@ def main():
     print ("导入海外供求更新时间:{}".format(int_sd_updated_time))
     print ("导入本地供求更新时间:{}".format(dom_sd_updated_time))
 
-    session = requests.session()
-    payload = {'account': username, 'password': password}
-    session.post(url='http://cn.its.glo-ots.cn/login.asp', data=payload)
-
     while True:
-        if int_sd_updated(session):
-            send_email(email, "海外供求更新")
-        if dom_sd_updated(session):
-            send_email(email, "本地求购更新")
+        counter = 0
+        session = requests.session()
+        payload = {'account': username, 'password': password}
+        session.post(url='http://cn.its.glo-ots.cn/login.asp', data=payload)
+        while True:
+            if counter == 100:
+                break
 
-        time.sleep(sleep_time)
+            if int_sd_updated(session):
+                send_email(email, "海外供求更新")
+            if dom_sd_updated(session):
+                send_email(email, "本地求购更新")
+            counter += 1
+            time.sleep(60)
 
+    
 if __name__ == '__main__':
     main()
