@@ -68,8 +68,7 @@ def dom_sd_updated(s:requests.session):
             json.dump(import_data, f)
         return True
 
-def main():
-    print ("开始运行了……")
+def work():
     username = ''
     password = ''
     sleep_time = 0
@@ -102,7 +101,7 @@ def main():
         payload = {'account': username, 'password': password}
         session.post(url='http://cn.its.glo-ots.cn/login.asp', data=payload)
         while True:
-            if counter == 100:
+            if counter == 20:
                 break
 
             if int_sd_updated(session):
@@ -112,6 +111,14 @@ def main():
             counter += 1
             time.sleep(60)
 
+def main():
+    print ("开始运行了……")
+    while True:
+        try:
+            work()
+        except AttributeError as e:
+            print(e)
+            time.sleep(10)
     
 if __name__ == '__main__':
     main()
