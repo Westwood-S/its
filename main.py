@@ -119,6 +119,9 @@ def main():
         except AttributeError as e:
             print(e)
             time.sleep(10)
+        except:
+            print("Unknown error, try again")
+            time.sleep(10)
     
 if __name__ == '__main__':
     main()
