@@ -16,7 +16,7 @@ import_data = {}
 
 def send_email(to: str, subject: str, text: str=None):
     _user = "375002410@qq.com"
-    _pwd = "vqfsdpjaaxeobhji"
+    _pwd = "fxxswdackfaobhgd"
 
     if text:
         msg = MIMEText(text)
