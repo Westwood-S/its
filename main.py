@@ -3,6 +3,7 @@
 
 # This code is dedicated to Cecilia Shih. 
 
+#导入相应的库
 import json
 import os
 import sys
@@ -14,20 +15,26 @@ import xlwings as xw
 def get_speakforcabin_data(s:requests.session, contract_number: str):
     global config
 
+    #下载网页的html内容
     data = s.get(url='http://cn.its.glo-ots.cn/ITS_EXPORT_SPEAKFORCABIN.asp?contractid=%27{}%27&op=0'.format(contract_number))
+    #设置网页的编码，用于解析网页
     data.encoding = 'gbk'
+    #使用BeautifulSoup库来解析刚才下载的html网页
     soup = BeautifulSoup(data.text, "lxml")
     data_dict = {}
     info_dict = {}
     cargo_list = []
+    #查找网页的所有table项
     tables = soup.find_all('table')
     
+    #装运港口的数据存在第8个table项的tr里面
     for idx, tr in enumerate(tables[8].find_all('tr')):
         if idx != 0:
             tds = tr.find_all('td')
             info_dict['装运港口'] = tds[1].contents[0].rstrip().lstrip()
             info_dict['目的港口'] = tds[2].contents[0].rstrip().lstrip()
 
+    #类似
     for idx, tr in enumerate(tables[9].find_all('tr')):
         if idx != 0:
             tds = tr.find_all('td')
@@ -374,12 +381,15 @@ def get_letterofcredit(s:requests.session, letter_number: str):
     return data_dict    
 
 def write_billcn(credict_letter, checkandaccept, speakforcabin, file_path):
+    #打开原bl-cn.xlsx文件，用来作为模板
     wb = xw.Book(r'bl-cn.xlsx')
+    #打开这个excel的第一个表项
     ws = wb.sheets[0]
 
     gross_weight = 0
     measurement = 0;
 
+    #把提单号写入S1表格中
     ws.range('S1').value = (speakforcabin['订舱信息']['提单号'])
     ws.range('C2').value = credict_letter['Beneficiary']
     ws.range('C7').value = 'TO ORDER'
@@ -397,6 +407,7 @@ def write_billcn(credict_letter, checkandaccept, speakforcabin, file_path):
     ws.range('N46').value = 'THREE (3)'
     ws.range('M48').value = 'SHANGHAI, CHINA'
 
+    #保存文件
     wb.save(r"./{}/bl-cn.xlsx".format(file_path))
 
 def write_insurecn(credict_letter, checkandaccept, speakforcabin,contract_number, insure, file_path):
@@ -489,23 +500,28 @@ def main():
     password = 'Stl292707'
     concract_credit_list = []
 
+    #读取配置文件
     with open("config.json", "r") as f:
         concract_credit_list = json.load(f)
     
     print ("用户名:{}".format(username))
     print ("密码:{}".format(password))
 
+    #登陆its网站，保存cookies
     session = requests.session()
     payload = {'account': username, 'password': password}
     session.post(url='http://cn.its.glo-ots.cn/login.asp', data=payload)
 
     for idx, contract_credit_pair in enumerate(concract_credit_list):
+        #建立合同号为名字的文件夹
         if not os.path.exists(contract_credit_pair['contract_number']):
             os.makedirs(contract_credit_pair['contract_number'])
 
+        #解析配置文件中的合同号信用证号
         contract_number = contract_credit_pair['contract_number']
         credit_number = contract_credit_pair['credit_number']
 
+        #获取合同数据
         data_applytocustom = get_applytocustom_data(session, contract_number)
         data_authentication = get_authentication_data(session, contract_number)
         data_check_and_accept = get_checkandaccept_data(session, contract_number)
@@ -515,8 +531,10 @@ def main():
         data_shipment = get_shipment_data(session, contract_number)
         data_speak_of_cabin = get_speakforcabin_data(session, contract_number)
 
+        #获取信用证数据
         data_credit = get_letterofcredit(session, credit_number)
 
+        #把数据写入相应EXCEL
         write_billcn(credict_letter = data_credit, checkandaccept = data_check_and_accept, speakforcabin = data_speak_of_cabin, file_path = contract_number)
         write_insurecn(credict_letter = data_credit, checkandaccept = data_check_and_accept, speakforcabin = data_speak_of_cabin, contract_number = contract_number, insure = data_insure, file_path = contract_number)
         write_draft(credict_letter = data_credit, file_path = contract_number)
