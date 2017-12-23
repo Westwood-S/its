@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+'''
+This module is used to fetch ITS website data, then write fetched data to given excel files.
+'''
 # This code is dedicated to Cecilia Shih. 
 
 #导入相应的库
@@ -12,11 +15,12 @@ import requests
 from bs4 import BeautifulSoup
 import xlwings as xw
 
-def get_speakforcabin_data(s:requests.session, contract_number: str):
-    global config
-
+def get_speakforcabin_data(s: requests.session, contract_number: str):
+    '''下载SpeakForCabin数据'''
+    
     #下载网页的html内容
-    data = s.get(url='http://cn.its.glo-ots.cn/ITS_EXPORT_SPEAKFORCABIN.asp?contractid=%27{}%27&op=0'.format(contract_number))
+    data = s.get(url='http://cn.its.glo-ots.cn/ITS_EXPORT_SPEAKFORCABIN.asp?contractid=%27{}%27&op=0'\
+    .format(contract_number))
     #设置网页的编码，用于解析网页
     data.encoding = 'gbk'
     #使用BeautifulSoup库来解析刚才下载的html网页
@@ -54,10 +58,9 @@ def get_speakforcabin_data(s:requests.session, contract_number: str):
     
     return data_dict
 
-def get_contractsignviewdetail_data(s:requests.session, contract_number: str):
-    global config
-
-    data = s.get(url='http://cn.its.glo-ots.cn/its_export_contractsignviewdetail.asp?contractnumber={}'.format(contract_number))
+def get_contractsignviewdetail_data(s: requests.session, contract_number: str):
+    data = s.get(url='http://cn.its.glo-ots.cn/its_export_contractsignviewdetail.asp?contractnumber={}'\
+    .format(contract_number))
     data.encoding = 'gbk'
     soup = BeautifulSoup(data.text, "lxml")
     data_dict = {}
@@ -92,10 +95,10 @@ def get_contractsignviewdetail_data(s:requests.session, contract_number: str):
     
     return data_dict
 
-def get_launchintoinsurance_data(s:requests.session, contract_number: str):
-    global config
 
-    data = s.get(url='http://cn.its.glo-ots.cn/its_export_launchintoinsurance.asp?contractid=%27{}%27&op=0'.format(contract_number))
+def get_launchintoinsurance_data(s: requests.session, contract_number: str):
+    data = s.get(url='http://cn.its.glo-ots.cn/its_export_launchintoinsurance.asp?contractid=%27{}%27&op=0'\
+    .format(contract_number))
     data.encoding = 'gbk'
     soup = BeautifulSoup(data.text, "lxml")
     
@@ -143,15 +146,14 @@ def get_launchintoinsurance_data(s:requests.session, contract_number: str):
     
     return data_dict
 
-def get_outofstorage(s:requests.session, contract_number: str):
-    global config
 
-    data = s.get(url='http://cn.its.glo-ots.cn/ITS_EXPORT_OUTSTORAGE.asp?contractid={}&op=0'.format(contract_number))
+def get_outofstorage(s: requests.session, contract_number: str):
+    data = s.get(url='http://cn.its.glo-ots.cn/ITS_EXPORT_OUTSTORAGE.asp?contractid={}&op=0'\
+    .format(contract_number))
     data.encoding = 'gbk'
     soup = BeautifulSoup(data.text, "lxml")
     
     data_dict = {}
-    info_dict = {}
     cargo_list = []
     tables = soup.find_all('table')
 
@@ -169,9 +171,7 @@ def get_outofstorage(s:requests.session, contract_number: str):
     
     return data_dict
 
-def get_checkandaccept_data(s:requests.session, contract_number: str):
-    global config
-
+def get_checkandaccept_data(s: requests.session, contract_number: str):
     data = s.get(url='http://cn.its.glo-ots.cn/ITS_EXPORT_CHECKANDACCEPT.asp?contractid={}&op=0'.format(contract_number))
     data.encoding = 'gbk'
     soup = BeautifulSoup(data.text, "lxml")
@@ -205,10 +205,10 @@ def get_checkandaccept_data(s:requests.session, contract_number: str):
     
     return data_dict
 
-def get_authentication_data(s:requests.session, contract_number: str):
-    global config
 
-    data = s.get(url='http://cn.its.glo-ots.cn/ITS_EXPORT_AUTHENTICATION.asp?contractid={}&op=0'.format(contract_number))
+def get_authentication_data(s: requests.session, contract_number: str):
+    data = s.get(url='http://cn.its.glo-ots.cn/ITS_EXPORT_AUTHENTICATION.asp?contractid={}&op=0'\
+    .format(contract_number))
     data.encoding = 'gbk'
     soup = BeautifulSoup(data.text, "lxml")
     
@@ -241,10 +241,12 @@ def get_authentication_data(s:requests.session, contract_number: str):
     
     return data_dict
 
-def get_applytocustom_data(s:requests.session, contract_number: str):
+
+def get_applytocustom_data(s: requests.session, contract_number: str):
     global config
 
-    data = s.get(url='http://cn.its.glo-ots.cn/ITS_EXPORT_APPLYTOCUSTOM.asp?contractid={}&op=0'.format(contract_number))
+    data = s.get(url='http://cn.its.glo-ots.cn/ITS_EXPORT_APPLYTOCUSTOM.asp?contractid={}&op=0'\
+    .format(contract_number))
     data.encoding = 'gbk'
     soup = BeautifulSoup(data.text, "lxml")
     
@@ -279,10 +281,12 @@ def get_applytocustom_data(s:requests.session, contract_number: str):
 
     return data_dict
 
-def get_shipment_data(s:requests.session, contract_number: str):
+
+def get_shipment_data(s: requests.session, contract_number: str):
     global config
 
-    data = s.get(url='http://cn.its.glo-ots.cn/ITS_EXPORT_SHIPMENT.asp?contractid={}&op=0'.format(contract_number))
+    data = s.get(url='http://cn.its.glo-ots.cn/ITS_EXPORT_SHIPMENT.asp?contractid={}&op=0'\
+    .format(contract_number))
     data.encoding = 'gbk'
     soup = BeautifulSoup(data.text, "lxml")
     
@@ -322,9 +326,9 @@ def get_shipment_data(s:requests.session, contract_number: str):
     data_dict['装船信息'] = info_dict
 
     return data_dict
- 
 
-def get_letterofcredit(s:requests.session, letter_number: str):
+
+def get_letterofcredit(s: requests.session, letter_number: str):
     global config
 
     data = s.get(url='http://cn.its.glo-ots.cn/ITS_LC_View.asp?ViewLCID={}'.format(letter_number))
@@ -378,7 +382,9 @@ def get_letterofcredit(s:requests.session, letter_number: str):
             if ':31C:' in tds[idx].contents[0]:
                 td = trs[tr_idx+1].find_all('td')
                 data_dict["DateOfIssue"] = td[1].contents[0].rstrip().lstrip()
+    
     return data_dict    
+
 
 def write_billcn(credict_letter, checkandaccept, speakforcabin, file_path):
     #打开原bl-cn.xlsx文件，用来作为模板
@@ -387,7 +393,7 @@ def write_billcn(credict_letter, checkandaccept, speakforcabin, file_path):
     ws = wb.sheets[0]
 
     gross_weight = 0
-    measurement = 0;
+    measurement = 0
 
     #把提单号写入S1表格中
     ws.range('S1').value = (speakforcabin['订舱信息']['提单号'])
@@ -398,10 +404,10 @@ def write_billcn(credict_letter, checkandaccept, speakforcabin, file_path):
     ws.range('H18').value = credict_letter['PortOfLoading']
     ws.range('C20').value = credict_letter['PortOfDischarge']
     for idx, data in enumerate(checkandaccept['货物信息']):
-        gross_weight += float (data['毛重'])
+        gross_weight += float(data['毛重'])
     ws.range('Q25').value = str(gross_weight) + 'Kgs'
     for idx, data in enumerate(checkandaccept['货物信息']):
-        measurement += round (float (data['尺码']), 3)
+        measurement += round(float(data['尺码']), 3)
     ws.range('T25').value = str(measurement) + 'Cbm'
 
     ws.range('N46').value = 'THREE (3)'
@@ -410,7 +416,9 @@ def write_billcn(credict_letter, checkandaccept, speakforcabin, file_path):
     #保存文件
     wb.save(r"./{}/bl-cn.xlsx".format(file_path))
 
-def write_insurecn(credict_letter, checkandaccept, speakforcabin,contract_number, insure, file_path):
+
+def write_insurecn(credict_letter, checkandaccept, speakforcabin, \
+contract_number, insure, file_path):
     wb = xw.Book(r'insure-cn.xlsx')
     ws = wb.sheets[0]
 
@@ -427,6 +435,7 @@ def write_insurecn(credict_letter, checkandaccept, speakforcabin,contract_number
     ws.range('E66').value = 'KAOHSIUNG, IN USD'
 
     wb.save(r"./{}/insure-cn.xlsx".format(file_path))
+
 
 def write_draft(credict_letter, file_path):
     wb = xw.Book(r'draft.xlsx')
@@ -446,11 +455,13 @@ def write_draft(credict_letter, file_path):
 
     wb.save(r"./{}/draft.xlsx".format(file_path))
 
-def write_cocn(credict_letter, checkandaccept, speakforcabin, insure, authentication, applytocustom, file_path):
+
+def write_cocn(credict_letter, checkandaccept, speakforcabin, insure, \
+authentication, applytocustom, file_path):
     wb = xw.Book(r'co-cn.xlsx')
     ws = wb.sheets[0]
 
-    measurement = 0;
+    measurement = 0
 
     ws.range('O2').value = authentication['检验程序']['一般原产地证书']
     ws.range('B3').value = credict_letter['Beneficiary']
@@ -460,10 +471,11 @@ def write_cocn(credict_letter, checkandaccept, speakforcabin, insure, authentica
     ws.range('B18').value = 'TAIWAN'
     ws.range('P22').value = applytocustom['货物信息'][0]['税号']
     for idx, data in enumerate(insure['货物信息']):
-            measurement += int(data['数量'])
+        measurement += int(data['数量'])
     ws.range('R22').value = str(measurement) + 'PCS'
 
     wb.save(r"./{}/co-cn.xlsx".format(file_path))
+
 
 def write_inspectioncn(credict_letter, checkandaccept, speakforcabin, file_path):
     wb = xw.Book(r'inspection-cn.xlsx')
@@ -475,6 +487,7 @@ def write_inspectioncn(credict_letter, checkandaccept, speakforcabin, file_path)
     ws.range('E20').value = speakforcabin['订舱信息']['英文船名'] + '/' + speakforcabin['订舱信息']['航次']
 
     wb.save(r"./{}/inspection-cn.xlsx".format(file_path))
+
 
 def write_jdwtcn(credict_letter, file_path):
     wb = xw.Book(r'jdwt-cn.xlsx')
@@ -493,26 +506,27 @@ def write_jdwtcn(credict_letter, file_path):
     ws.range('O30').value = credict_letter['ReceivedFrom']
 
     wb.save(r"./{}/jdwt-cn.xlsx".format(file_path))
-    
+
+
 def main():
-    print ("开始运行了……")
+    print("开始运行了……")
     username = 'ftcl03'
     password = 'Stl292707'
-    concract_credit_list = []
+    contract_credit_list = []
 
     #读取配置文件
     with open("config.json", "r") as f:
-        concract_credit_list = json.load(f)
-    
-    print ("用户名:{}".format(username))
-    print ("密码:{}".format(password))
+        contract_credit_list = json.load(f)
+
+    print("用户名:{}".format(username))
+    print("密码:{}".format(password))
 
     #登陆its网站，保存cookies
     session = requests.session()
     payload = {'account': username, 'password': password}
     session.post(url='http://cn.its.glo-ots.cn/login.asp', data=payload)
 
-    for idx, contract_credit_pair in enumerate(concract_credit_list):
+    for idx, contract_credit_pair in enumerate(contract_credit_list):
         #建立合同号为名字的文件夹
         if not os.path.exists(contract_credit_pair['contract_number']):
             os.makedirs(contract_credit_pair['contract_number'])
@@ -535,12 +549,23 @@ def main():
         data_credit = get_letterofcredit(session, credit_number)
 
         #把数据写入相应EXCEL
-        write_billcn(credict_letter = data_credit, checkandaccept = data_check_and_accept, speakforcabin = data_speak_of_cabin, file_path = contract_number)
-        write_insurecn(credict_letter = data_credit, checkandaccept = data_check_and_accept, speakforcabin = data_speak_of_cabin, contract_number = contract_number, insure = data_insure, file_path = contract_number)
-        write_draft(credict_letter = data_credit, file_path = contract_number)
-        write_cocn(credict_letter = data_credit, checkandaccept = data_check_and_accept, speakforcabin = data_speak_of_cabin, insure = data_insure, authentication = data_authentication, applytocustom = data_applytocustom, file_path = contract_number)
-        write_inspectioncn(credict_letter = data_credit, checkandaccept = data_check_and_accept, speakforcabin = data_speak_of_cabin, file_path = contract_number)
-        write_jdwtcn(credict_letter = data_credit, file_path = contract_number)
+        write_billcn(credict_letter=data_credit, checkandaccept=data_check_and_accept, \
+        speakforcabin=data_speak_of_cabin, file_path=contract_number)
+
+        write_insurecn(credict_letter=data_credit, checkandaccept=data_check_and_accept, \
+        speakforcabin=data_speak_of_cabin, contract_number=contract_number, \
+        insure=data_insure, file_path=contract_number)
+
+        write_draft(credict_letter=data_credit, file_path=contract_number)
+
+        write_cocn(credict_letter=data_credit, checkandaccept=data_check_and_accept, \
+        speakforcabin=data_speak_of_cabin, insure=data_insure, \
+        authentication=data_authentication, applytocustom=data_applytocustom, \
+        file_path=contract_number)
+
+        write_inspectioncn(credict_letter=data_credit, checkandaccept=data_check_and_accept, \
+        speakforcabin=data_speak_of_cabin, file_path=contract_number)
+        write_jdwtcn(credict_letter=data_credit, file_path=contract_number)
 
 if __name__ == '__main__':
     main()
