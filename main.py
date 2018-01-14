@@ -1,127 +1,49 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-"fetch data from ITS website periodically"
+"fetch data from Device Status Website"
 
-import smtplib
-from email.mime.text import MIMEText
-import time
-import re
 import json
+import time
 import requests
+from bs4 import BeautifulSoup
 
-int_sd_updated_time = ''
-dom_sd_updated_time = ''
-config = {}
-import_data = {}
-
-def send_email(to: str, subject: str, text: str=None):
-    _user = "375002410@qq.com"
-    _pwd = "fxxswdackfaobhgd"
-
-    if text:
-        msg = MIMEText(text)
-    else:
-        msg = MIMEText("")
-    msg["Subject"] = subject
-    msg["From"] = _user
-    msg["To"] = to
-
-    try:
-        s = smtplib.SMTP_SSL("smtp.qq.com", 465)
-        s.login(_user, _pwd)
-        s.sendmail(_user, to, msg.as_string())
-        s.quit()
-    except smtplib.SMTPException:
-        print("send email faild, {}".format(smtplib.SMTPException))
-
-def int_sd_updated(s:requests.session):
-    global int_sd_updated_time
-    global config
-
-    data = s.get(url='http://cn.its.glo-ots.cn/ITS_MSG_Int_sd.asp')
+def get_equipment_data(session: requests, domain_name):
+    data = session.get(url=domain_name)
     data.encoding = 'gbk'
-    times = re.search(r'(\d)+/(\d+)/(\d+) (\d+):(\d+):(\d+)', data.text)
-    latest_time = times.group(0)
-    if int_sd_updated_time == latest_time:
-        return False
-    else:
-        int_sd_updated_time = latest_time
-        import_data["int_sd_updated_time"] = latest_time
-        with open("data.json", "w") as f:
-            json.dump(import_data, f)
-        return True
+    soup = BeautifulSoup(data.text, "lxml")
+    p_lists = soup.find_all('p')
+    
+    power_status = str(p_lists[0].text).split(':').pop().strip(' ')
+    serial_number = str(p_lists[1].text).split(':').pop().strip(' ')
 
-def dom_sd_updated(s:requests.session):
-    global dom_sd_updated_time
-    global config
+    print("电源状态: ", power_status)
+    print("设备序列号: ", serial_number)
 
-    data = s.get(url='http://cn.its.glo-ots.cn/ITS_MSG_Dom_sd.asp')
-    data.encoding = 'gbk'
-    times = re.search(r'(\d)+/(\d+)/(\d+) (\d+):(\d+):(\d+)', data.text)
-    latest_time = times.group(0)
-    if dom_sd_updated_time == latest_time:
-        return False
-    else:
-        dom_sd_updated_time = latest_time
-        import_data["dom_sd_updated_time"] = latest_time
-        with open("data.json", "w") as f:
-            json.dump(import_data, f)
-        return True
-
-def work():
-    username = ''
-    password = ''
+def main():
+    "Work Function"
+    print("开始运行了……")
+     
+    domain_name = ''
     sleep_time = 0
     email = ''
-    global config
-    global import_data
-    global int_sd_updated_time
-    global dom_sd_updated_time
+    config = {}
 
     with open("config.json", "r") as f:
         config = json.load(f)
-    with open("data.json", "r") as f:
-        import_data = json.load(f)
-    username = config["username"]
-    password = config["password"]
+
     sleep_time = config["time"]
     email = config["email"]
-    int_sd_updated_time = import_data["int_sd_updated_time"]
-    dom_sd_updated_time = import_data["dom_sd_updated_time"]
-    print ("用户名:{}".format(username))
-    print ("密码:{}".format(password))
-    print ("采集周期:{}".format(sleep_time))
-    print ("发送邮箱:{}".format(email))
-    print ("导入海外供求更新时间:{}".format(int_sd_updated_time))
-    print ("导入本地供求更新时间:{}".format(dom_sd_updated_time))
+    domain_name = config['domain_name']
+
+    print("设备域名:{}".format(domain_name))
+    print("采集周期:{}".format(sleep_time))
+    print("发送邮箱:{}".format(email))
+
+    session = requests.session()
 
     while True:
-        counter = 0
-        session = requests.session()
-        payload = {'account': username, 'password': password}
-        session.post(url='http://cn.its.glo-ots.cn/login.asp', data=payload)
-        while True:
-            if counter == 20:
-                break
-
-            if int_sd_updated(session):
-                send_email(email, "海外供求更新")
-            if dom_sd_updated(session):
-                send_email(email, "本地求购更新")
-            counter += 1
-            time.sleep(60)
-
-def main():
-    print ("开始运行了……")
-    while True:
-        try:
-            work()
-        except AttributeError as e:
-            print(e)
-            time.sleep(10)
-        except:
-            print("Unknown error, try again")
-            time.sleep(10)
+        get_equipment_data(session, domain_name)
+        time.sleep(sleep_time)
     
 if __name__ == '__main__':
     main()
