@@ -43,8 +43,7 @@ def send_email(to: str, subject: str, text: str=None):
         print("send email faild, {}".format(smtplib.SMTPException))
 
 def tcplink(sock, addr, power_status, serial_number):
-    sock.send(("Power Status: " + power_status + "\n").encode())
-    sock.send(("Serial Number: " + serial_number + "\n").encode())
+    
     print("Send finished")
 
 def get_equipment_data_local(session: requests, domain_name):
@@ -144,18 +143,23 @@ def main():
         print("Connected")    
         session = requests.session()
 
-        while True:
-            if local_mode:
-                power_status, serial_number = get_equipment_data_local(session, domain_name)
-            else:
-                power_status, serial_number = get_equipment_data(session, domain_name)
+        try:
+            while True:
+                if local_mode:
+                    power_status, serial_number = get_equipment_data_local(session, domain_name)
+                else:
+                    power_status, serial_number = get_equipment_data(session, domain_name)
 
-            if CUI_mode:
-                print(power_status)
-                print(serial_number)
+                if CUI_mode:
+                    print(power_status)
+                    print(serial_number)
 
-            threading.Thread(target=tcplink, args=(sock, addr, power_status, serial_number)).start()
-            time.sleep(sleep_time)
+                sock.send(("Power Status: " + power_status + "\n").encode())
+                sock.send(("Serial Number: " + serial_number + "\n").encode())
+            #threading.Thread(target=tcplink, args=(sock, addr, power_status, serial_number)).start()
+                time.sleep(sleep_time)
+        except BrokenPipeError:
+            exit(0)
                 
        
 if __name__ == '__main__':
